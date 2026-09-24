@@ -21,7 +21,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #1e1e1e; color: #fff; }
         .container { display: flex; flex-direction: column; gap: 20px; max-width: 1400px; margin: 0 auto; }
         
-        /* HEADER WEB UTAMA (Dibuat Lebih Terang) */
+        /* HEADER WEB UTAMA */
         .bmkg-header { display: flex; align-items: center; gap: 20px; background: #f0f2f5; padding: 15px 25px; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         .bmkg-logo { width: 60px; height: auto; }
         .bmkg-text-container { display: flex; flex-direction: column; }
@@ -52,19 +52,7 @@
 
         /* Kotak Info Slide JPG */
         .custom-capture-label { overflow: visible !important; } 
-        .capture-box { 
-            width: max-content; 
-            min-width: 220px;
-            white-space: nowrap;
-            box-sizing: border-box; 
-            background: #ffe699; 
-            color: #000; 
-            padding: 15px 15px 12px 15px; 
-            border-radius: 8px; 
-            box-shadow: 2px 3px 8px rgba(0,0,0,0.5); 
-            font-family: sans-serif; 
-            border: 1px solid #e0c367; 
-        }
+        .capture-box { width: max-content; min-width: 220px; white-space: nowrap; box-sizing: border-box; background: #ffe699; color: #000; padding: 15px 15px 12px 15px; border-radius: 8px; box-shadow: 2px 3px 8px rgba(0,0,0,0.5); font-family: sans-serif; position: relative; border: 1px solid #e0c367; }
         .capture-title { background: #8e24aa; color: #fff; padding: 4px 10px; font-weight: 900; font-size: 12px; border-radius: 4px; position: absolute; top: -14px; left: -10px; border: 2px solid #fff; box-shadow: 1px 2px 4px rgba(0,0,0,0.3); }
         .capture-cond { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; margin-bottom: 6px; margin-top: 2px; color: #333; border-bottom: 1px solid #d6b85a; padding-bottom: 4px;}
         .capture-icon { width: 24px; height: 24px; background: #444; border-radius: 50%; padding: 2px; }
@@ -75,9 +63,16 @@
         .tabs { display: flex; gap: 10px; }
         .tab-btn { background: #333; color: #ccc; border: 1px solid #555; padding: 10px 25px; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .tab-btn.active { background: #5bc0de; color: #000; border-color: #5bc0de; }
-        .btn-capture { background: #e0a800; color: #000; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: 0.2s; }
-        .btn-capture:hover { background: #ffc107; transform: translateY(-1px); }
-        .btn-capture:disabled { background: #666; cursor: not-allowed; color: #999; }
+        
+        .action-btns { display: flex; gap: 10px; }
+        .btn-capture { border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: 0.2s; }
+        .btn-capture:hover { transform: translateY(-1px); }
+        .btn-capture:disabled { background: #666 !important; cursor: not-allowed; color: #aaa !important; }
+        
+        .btn-09 { background: #e0a800; color: #000; }
+        .btn-09:hover { background: #ffc107; }
+        .btn-27 { background: #5bc0de; color: #000; }
+        .btn-27:hover { background: #62cff0; }
 
         .chart-section { width: 100%; background: #2b2b2b; padding: 20px; border-radius: 8px; border: 1px solid #444; box-sizing: border-box; }
         .header-info { margin-bottom: 15px; }
@@ -131,9 +126,9 @@
 <body>
 
 <div class="container">
-    <!-- Header Web BMKG (Kembali ditambahkan dengan tema terang) -->
+    <!-- Header Web BMKG -->
     <div class="bmkg-header">
-        <img src="logo bmkg.png" alt="Logo BMKG" class="bmkg-logo">
+        <img src="logo-bmkg.png" alt="Logo BMKG" class="bmkg-logo">
         <div class="bmkg-text-container">
             <div class="bmkg-title-top">Stasiun Meteorologi Kelas I</div>
             <div class="bmkg-title-bottom">I Gusti Ngurah Rai</div>
@@ -144,7 +139,7 @@
         <div id="map"></div>
         
         <div id="cap-head" class="capture-overlay capture-header">
-            <img src="logo bmkg.png" alt="BMKG">
+            <img src="logo-bmkg.png" alt="BMKG">
             <div class="capture-header-text">
                 <h1>BADAN METEOROLOGI KLIMATOLOGI DAN GEOFISIKA</h1>
                 <h1>STASIUN METEOROLOGI KELAS I I GUSTI NGURAH RAI</h1>
@@ -153,7 +148,8 @@
         </div>
 
         <div id="cap-valid" class="capture-overlay capture-validity">
-            <h2>HOLDING AREA FORECAST</h2>
+            <!-- ID ditambahkan pada H2 untuk update RWY dinamis -->
+            <h2 id="cap-rwy-title">HOLDING AREA FORECAST</h2>
             <p id="cap-time-text">Valid: --</p>
         </div>
     </div>
@@ -163,9 +159,16 @@
             <button class="tab-btn active" onclick="switchTab('meteogram')">Meteogram</button>
             <button class="tab-btn" onclick="switchTab('airgram')">Airgram</button>
         </div>
-        <button id="btn-generate" class="btn-capture" onclick="generateSlide()">
-            📷 Generate Peta Slide (JPG)
-        </button>
+        
+        <!-- DUA TOMBOL GENERATE BERDASARKAN RUNWAY -->
+        <div class="action-btns">
+            <button id="btn-gen-09" class="btn-capture btn-09" onclick="generateSlide('09')">
+                📷 Slide RWY 09
+            </button>
+            <button id="btn-gen-27" class="btn-capture btn-27" onclick="generateSlide('27')">
+                📷 Slide RWY 27
+            </button>
+        </div>
     </div>
 
     <div class="chart-section" id="chartSection">
@@ -267,6 +270,7 @@
     function getWeatherDescID(code) { if (code === 0) return 'Cerah'; if (code === 1) return 'Cerah Berawan'; if (code === 2) return 'Berawan Sebagian'; if (code === 3) return 'Berawan'; if (code === 45 || code === 48) return 'Berkabut'; if (code >= 51 && code <= 55) return 'Gerimis'; if (code >= 61 && code <= 65) return 'Hujan'; if (code >= 80 && code <= 82) return 'Hujan Deras'; if (code >= 95) return 'Badai Petir'; return 'Tidak Diketahui'; }
     function getWeatherIconUrl(code, timeStr) { const dateObj = new Date(timeStr.includes('+') || timeStr.includes('Z') ? timeStr : timeStr + '+08:00'); const hour = dateObj.getHours(); const suffix = (hour >= 6 && hour <= 17) ? 'd' : 'n'; let icon = '01'; if (code === 0) icon = '01'; else if (code === 1 || code === 2) icon = '02'; else if (code === 3) icon = '04'; else if (code === 45 || code === 48) icon = '50'; else if (code >= 51 && code <= 55) icon = '09'; else if (code >= 61 && code <= 65) icon = '10'; else if (code >= 71 && code <= 77) icon = '13'; else if (code >= 80 && code <= 82) icon = '09'; else if (code >= 95) icon = '11'; return `https://openweathermap.org/img/wn/${icon}${suffix}.png`; }
 
+    // === RENDER PETA INTERAKTIF ===
     waypoints.forEach(wp => {
         const marker = L.circleMarker([wp.lat, wp.lon], { radius: 7, fillColor: "#d32f2f", color: "#ffffff", weight: 2, opacity: 1, fillOpacity: 1 }).addTo(map);
         marker.bindTooltip(wp.name, { direction: 'top', className: 'waypoint-tooltip', offset: [0, -10] });
@@ -348,17 +352,27 @@
         });
     });
 
-    async function generateSlide() {
-        const btn = document.getElementById('btn-generate');
+    // === GENERATE GAMBAR SLIDE BERDASARKAN RUNWAY ===
+    async function generateSlide(rwyConfig) {
+        const btn09 = document.getElementById('btn-gen-09');
+        const btn27 = document.getElementById('btn-gen-27');
         const mapEl = document.getElementById('map');
         const wrapper = document.getElementById('capture-wrapper');
         
-        btn.disabled = true;
-        btn.innerHTML = "⏳ Menyiapkan Data...";
+        btn09.disabled = true; btn27.disabled = true;
+        const originalText = rwyConfig === '09' ? btn09.innerHTML : btn27.innerHTML;
+        if(rwyConfig === '09') btn09.innerHTML = "⏳ Memproses..."; else btn27.innerHTML = "⏳ Memproses...";
+
+        // Filter Array Berdasarkan Runway Target
+        const rwy09List = ["VIDIL", "BEPTA", "MAGUR", "ESKOG", "KHUTA", "GODEV", "MAVDU", "IDGON", "LELES", "GUMKA"];
+        const rwy27List = ["VIDIL", "BEPTA", "ESKOG", "MAGUR", "GODEV", "BENOA", "GOSAN", "SARAV", "IDGON", "LELES", "GUMKA"];
+        
+        const activeList = rwyConfig === '09' ? rwy09List : rwy27List;
+        const filteredWaypoints = waypoints.filter(wp => activeList.includes(wp.name));
 
         try {
-            const lats = waypoints.map(w => w.lat).join(',');
-            const lons = waypoints.map(w => w.lon).join(',');
+            const lats = filteredWaypoints.map(w => w.lat).join(',');
+            const lons = filteredWaypoints.map(w => w.lon).join(',');
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&hourly=weathercode,wind_speed_400hPa,wind_direction_400hPa,wind_speed_500hPa,wind_direction_500hPa,wind_speed_700hPa,wind_direction_700hPa,wind_speed_850hPa,wind_direction_850hPa&wind_speed_unit=kn&timezone=auto&forecast_days=1`;
             const res = await fetch(url);
             const bulkData = await res.json();
@@ -371,6 +385,8 @@
             let month = block.dateObj.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase();
             let year = block.dateObj.getUTCFullYear();
             
+            // Set Dynamic Header
+            document.getElementById('cap-rwy-title').innerText = `HOLDING AREA FORECAST - RWY ${rwyConfig}`;
             document.getElementById('cap-time-text').innerText = `Valid : ${sh}00 UTC - ${eh}00 UTC (${day} ${month} ${year})`;
 
             map.closePopup();
@@ -383,7 +399,8 @@
             document.getElementById('cap-head').style.display = 'flex';
             document.getElementById('cap-valid').style.display = 'block';
             
-            waypoints.forEach((wp, index) => {
+            filteredWaypoints.forEach((wp, index) => {
+                // Open-Meteo returns array if multiple coords, or object if single. Since we have >1, it's an array.
                 const wpData = bulkData[index].hourly;
                 
                 let blockIndices = [];
@@ -443,27 +460,28 @@
 
             await new Promise(r => setTimeout(r, 1500));
 
-            btn.innerHTML = "📸 Memotret Gambar...";
             const canvas = await html2canvas(wrapper, { useCORS: true, allowTaint: false, backgroundColor: '#ffffff', scale: 1.5 });
 
             const link = document.createElement('a');
-            link.download = `Slide_Holding_Area_${new Date().getTime()}.jpg`;
+            link.download = `Slide_Holding_Area_RWY${rwyConfig}_${new Date().getTime()}.jpg`;
             link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
 
         } catch (err) {
             console.error("Gagal Generate:", err);
-            alert("Terjadi kesalahan saat memotret peta. Pastikan file 'logo bmkg.png' berada di folder yang sama.");
+            alert("Terjadi kesalahan saat memotret peta. Pastikan file 'logo-bmkg.png' berada di folder yang sama.");
         } finally {
             document.getElementById('cap-head').style.display = 'none';
             document.getElementById('cap-valid').style.display = 'none';
+            document.getElementById('cap-rwy-title').innerText = `HOLDING AREA FORECAST`;
+            
             wrapper.classList.remove('export-mode');
             map.invalidateSize();
             map.setView([-8.7, 115.2], 8, {animate: false});
             captureLayerGroup.clearLayers();
             
-            btn.disabled = false;
-            btn.innerHTML = "📷 Generate Peta Slide (JPG)";
+            btn09.disabled = false; btn27.disabled = false;
+            if(rwyConfig === '09') btn09.innerHTML = originalText; else btn27.innerHTML = originalText;
         }
     }
 
